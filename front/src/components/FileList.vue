@@ -8,22 +8,22 @@
       </el-icon>
     </el-button>
   </div>
-  <el-table :data="tableData" @row-click="open" style="width: 100%">
-    <el-table-column prop="name" label="名称" width="180" />
-    <el-table-column prop="time" label="时间" width="180" />
-    <el-table-column prop="size" label="大小" width="180" />
-    <el-table-column label="操作">
+  <el-table :data="tableData" stripe @row-click="open" style="width: 100%">
+    <el-table-column prop="name" label="名称" />
+    <el-table-column prop="time" label="时间" />
+    <el-table-column prop="size" label="大小" />
+    <el-table-column column-key="operate" label="操作">
       <template #default="scope">
-        <div>
-          <el-dropdown>
-            <el-button type="primary" plain>
-              操作<el-icon class="el-icon--right">
-                <arrow-down />
+        <el-row class="mb-4">
+          <el-dropdown v-if="scope.row.isfile">
+            <el-button type="primary" round plain>
+              <el-icon>
+                <Expand />
               </el-icon>
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item v-if="scope.row.isfile">
+                <el-dropdown-item>
                   <el-link type="primary" :href="getDownload(scope.row.name)" target="_blank">
                     <el-icon>
                       <Download />
@@ -31,21 +31,33 @@
                     下载
                   </el-link>
                 </el-dropdown-item>
-                <el-dropdown-item v-if="scope.row.isfile && scope.row.name.match(/mp4|mkv|avi|mov|rmvb|webm|flv$/)">
-                  <el-link type="primary" :href="getStream('iina://weblink?url=', scope.row.name)" target="_blank">
-                    <el-icon>
-                      <VideoPlay />
-                    </el-icon>
-                    IINA
-                  </el-link>
-                </el-dropdown-item>
-                <el-dropdown-item>
-                  <el-button @click="deleteItem(scope.row.name)" type="danger" link>删除</el-button>
-                </el-dropdown-item>
+                <div v-if="scope.row.name.match(/mp4|mkv|avi|mov|rmvb|webm|flv$/)">
+                  <el-dropdown-item>
+                    <el-link type="primary" :href="getStream('iina://weblink?url=', scope.row.name)" target="_blank">
+                      <el-icon>
+                        <VideoPlay />
+                      </el-icon>
+                      IINA
+                    </el-link>
+                  </el-dropdown-item>
+                  <el-dropdown-item>
+                    <el-link type="primary" :href="getStream('vlc://', scope.row.name)" target="_blank">
+                      <el-icon>
+                        <VideoPlay />
+                      </el-icon>
+                      VLC
+                    </el-link>
+                  </el-dropdown-item>
+                </div>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-        </div>
+          <el-popconfirm title="确定要删除吗?" @confirm="deleteItem(scope.row.name)">
+            <template #reference>
+              <el-button type="danger" :icon="Delete" plain round></el-button>
+            </template>
+          </el-popconfirm>
+        </el-row>
       </template>
     </el-table-column>
   </el-table>
@@ -76,7 +88,7 @@
 import axios from "axios";
 import { reactive, onMounted, defineComponent, toRefs, ref, computed } from "vue";
 import { useRouter, useRoute } from 'vue-router'
-import { HomeFilled, Back, Upload } from '@element-plus/icons-vue'
+import { HomeFilled, Back, Upload, Delete } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { ElLoading } from 'element-plus'
 
@@ -111,8 +123,8 @@ export default defineComponent({
       let url = axios.defaults.baseURL + "/stream?path="
       return prefix + url + curPath.value + name;
     }
-    const open = (row) => {
-      if (row.isfile)
+    const open = (row, column) => {
+      if (row.isfile || column.columnKey == "operate")
         return
       router.push("/" + curPath.value + row.name);
     }
@@ -177,7 +189,8 @@ export default defineComponent({
       router,
       HomeFilled,
       Back,
-      Upload
+      Upload,
+      Delete
     }
   }
 })
