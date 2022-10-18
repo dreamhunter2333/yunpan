@@ -7,8 +7,9 @@
         <Upload />
       </el-icon>
     </el-button>
+    <el-switch v-model="isDark" style="float:right" inline-prompt :active-icon="Moon" :inactive-icon="Sunny" />
   </div>
-  <el-table :data="tableData" stripe @row-click="open" style="width: 100%">
+  <el-table :data="tableData" stripe table-layout="auto" @row-click="open">
     <el-table-column prop="name" label="名称" />
     <el-table-column prop="time" label="时间" />
     <el-table-column prop="size" label="大小" />
@@ -88,12 +89,14 @@
 import axios from "axios";
 import { reactive, onMounted, defineComponent, toRefs, ref, computed } from "vue";
 import { useRouter, useRoute } from 'vue-router'
-import { HomeFilled, Back, Upload, Delete } from '@element-plus/icons-vue'
+import { HomeFilled, Back, Upload, Delete, Sunny, Moon } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { ElLoading } from 'element-plus'
+import { useDark } from '@vueuse/core'
 
 export default defineComponent({
   setup() {
+    const isDark = useDark()
     const router = useRouter()
     const route = useRoute()
     const drawer = ref(false)
@@ -190,7 +193,9 @@ export default defineComponent({
       HomeFilled,
       Back,
       Upload,
-      Delete
+      Delete,
+      isDark,
+      Sunny, Moon
     }
   }
 })
