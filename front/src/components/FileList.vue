@@ -7,6 +7,7 @@
         <Upload />
       </el-icon>
     </el-button>
+    <el-button style="float:right" @click="logOut" type="primary" :icon="User">退出登录</el-button>
     <el-switch v-model="isDark" style="float:right" inline-prompt :active-icon="Moon" :inactive-icon="Sunny" />
   </div>
   <el-table :data="tableData" stripe table-layout="auto" @row-click="open">
@@ -63,7 +64,7 @@
     </el-table-column>
   </el-table>
   <el-drawer v-model="drawer">
-    <template #title>
+    <template #header>
       <h4>上传文件</h4>
     </template>
     <template #default>
@@ -89,7 +90,7 @@
 import axios from "axios";
 import { reactive, onMounted, defineComponent, toRefs, ref, computed } from "vue";
 import { useRouter, useRoute } from 'vue-router'
-import { HomeFilled, Back, Upload, Delete, Sunny, Moon } from '@element-plus/icons-vue'
+import { HomeFilled, Back, Upload, Delete, Sunny, Moon, User } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { ElLoading } from 'element-plus'
 import { useDark } from '@vueuse/core'
@@ -179,12 +180,17 @@ export default defineComponent({
       }
       loadingInstance.close();
     };
+    const logOut = () => {
+      localStorage.removeItem('jwt')
+      router.push('/login')
+    };
     return {
       ...toRefs(state),
       onUpload,
       getDownload,
       onChangeFile,
       deleteItem,
+      logOut,
       getStream,
       open,
       filePath,
@@ -195,7 +201,7 @@ export default defineComponent({
       Upload,
       Delete,
       isDark,
-      Sunny, Moon
+      Sunny, Moon, User
     }
   }
 })
