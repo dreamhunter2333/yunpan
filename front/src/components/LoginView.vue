@@ -5,16 +5,20 @@
     </div>
     <div class="right">
       <!-- 登录主界面 -->
-      <h4>登录</h4>
-      <form action="#">
-        <input type="text" placeholder="用户名" :value=useraccount :model="useraccount" class="input">
-        <input type="password" placeholder="密码" :model="password" class="input">
-        <input type="submit" value="Login" class="button" @click="checkPassword">
-      </form>
-      <div class="more">
+      <h4>用户登陆</h4>
+      <el-form :model="formData">
+        <el-form-item prop="useraccount">
+            <el-input type="text" placeholder="用户名" v-model="formData.useraccount"></el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+            <el-input type="password" placeholder="请输入密码" v-model="formData.password"></el-input>
+        </el-form-item>
+        <el-button type="primary" @click="checkPassword">Login</el-button>
+    </el-form>
+    <div class="more">
         <a href="#">注册账号</a>
         <a href="#">找回密码</a>
-      </div>
+    </div>
     </div>
 
   </div>
@@ -22,23 +26,25 @@
 
 <script setup>
 import axios from "axios";
-import { ref } from 'vue'
+import { reactive } from 'vue'
 import { ElLoading, ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 
-const useraccount = ref("fufu")
-const password = ref("")
-const router = useRouter()
+
+const formData = reactive({
+    useraccount: '',
+    password: '',
+});
+
+const router = useRouter();
 
 const checkPassword = async () => {
-    const loadingInstance = ElLoading.service({ fullscreen: true })
-    // get the value of input
-    // console.log(`
-    //     useraccount is ${useraccount.value},
-    //     password is ${password.value}
-    // `)
+    const loadingInstance = ElLoading.service({ fullscreen: true });
     try {
-        let res = await axios.post("/login", { 'password': password.value });
+        let res = await axios.post("/login", { 
+            'useraccount': formData.useraccount,
+            'password': formData.password 
+        });
         ElMessage({
             message: '登录成功',
             type: 'success',
@@ -46,10 +52,10 @@ const checkPassword = async () => {
         localStorage.setItem("jwt", res.data)
         router.push("/")
     } catch (err) {
-        ElMessage.error('请求出错了: ' + err.message + ", " + (err.response ? err.response.data : ""))
+        ElMessage.error('请求出错了: ' + err.message + ", " + (err.response ? err.response.data : ""));
     }
     loadingInstance.close();
-}
+};
 </script>
 
 <style>
