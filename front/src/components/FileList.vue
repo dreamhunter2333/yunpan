@@ -134,6 +134,8 @@ export default defineComponent({
     }
     const getStream = (prefix, name) => {
       let url = axios.defaults.baseURL + "/stream/";
+      if (axios.defaults.baseURL == "/api")
+        url = window.location.origin + url
       return prefix + url + curPath.value + name + "?token=" + token.value;
     }
     const open = (row, column) => {

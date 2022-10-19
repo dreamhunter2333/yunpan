@@ -5,8 +5,10 @@ services:
     image: registry.cn-beijing.aliyuncs.com/dreamhunter/yunpan
     container_name: yunpan
     environment:
-      - root_path=data
+      - root_path=/data
       - password=admin
       - secret=admin
+    volumes:
+      - ../data:/data
     ports:
       - "8000:8000"
