@@ -1,27 +1,28 @@
 <template>
-  <div class="box">
-    <div class="left">
-      <!-- 图片部分 -->
+    <div class="wrap">
+        <div class="box">
+            <div class="left">
+                <!-- 图片部分 -->
+            </div>
+            <div class="right">
+                <!-- 登录主界面 -->
+                <h4>用户登陆</h4>
+                <el-form :model="formData">
+                    <!-- <el-form-item prop="useraccount">
+                        <el-input type="text" placeholder="用户名" v-model="formData.useraccount"></el-input>
+                    </el-form-item> -->
+                    <el-form-item prop="password">
+                        <el-input type="password" placeholder="请输入密码" v-model="formData.password"></el-input>
+                    </el-form-item>
+                    <el-button type="primary" @click="checkPassword">登录</el-button>
+                </el-form>
+                <!-- <div class="more">
+                    <a href="#">注册账号</a>
+                    <a href="#">找回密码</a>
+                </div> -->
+            </div>
+        </div>
     </div>
-    <div class="right">
-      <!-- 登录主界面 -->
-      <h4>用户登陆</h4>
-      <el-form :model="formData">
-        <el-form-item prop="useraccount">
-            <el-input type="text" placeholder="用户名" v-model="formData.useraccount"></el-input>
-        </el-form-item>
-        <el-form-item prop="password">
-            <el-input type="password" placeholder="请输入密码" v-model="formData.password"></el-input>
-        </el-form-item>
-        <el-button type="primary" @click="checkPassword">Login</el-button>
-    </el-form>
-    <div class="more">
-        <a href="#">注册账号</a>
-        <a href="#">找回密码</a>
-    </div>
-    </div>
-
-  </div>
 </template>
 
 <script setup>
@@ -41,9 +42,9 @@ const router = useRouter();
 const checkPassword = async () => {
     const loadingInstance = ElLoading.service({ fullscreen: true });
     try {
-        let res = await axios.post("/login", { 
+        let res = await axios.post("/login", {
             'useraccount': formData.useraccount,
-            'password': formData.password 
+            'password': formData.password
         });
         ElMessage({
             message: '登录成功',
@@ -66,12 +67,8 @@ const checkPassword = async () => {
     box-sizing: border-box;
 }
 
-html {
+.wrap {
     font-size: 10px;
-}
-
-body {
-    background: linear-gradient(120deg, #83C0E1 0%, #D6DCE9 100%) no-repeat;
     width: 100vw;
     height: 100vh;
     display: flex;
@@ -92,7 +89,6 @@ body {
 .box .left {
     width: 35%;
     height: 100%;
-    background-color: #83C0E1;
     border-radius: 1.5rem 0 0 1.5rem;
     background-image: url(../../public/resource/img/login.jpg);
     /* 有点超出 */

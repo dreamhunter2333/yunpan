@@ -1,20 +1,26 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 from router import files_api
 from router import index
 
-app = FastAPI()
+app = FastAPI(title="yunpan")
 
 
 @app.middleware("http")
 async def check_jwt_header(request: Request, call_next):
     # TODO: generate temp password for download and stream
     if (
-        request.url.path not in ("/api/login", "/api/download", "/api/stream") and
+        request.url.path != "/api/login" and
         request.url.path.startswith("/api") and request.method != "OPTIONS"
     ):
-        res = index.check_jwt(request.headers.get("jwt"))
+        res = index.check_jwt(
+            request.query_params.get("token")
+            if request.url.path.startswith("/api/download") or request.url.path.startswith("/api/stream")
+            else request.headers.get("jwt")
+        )
         if res:
             return res
     response = await call_next(request)
@@ -30,3 +36,15 @@ app.add_middleware(
 
 app.include_router(files_api.router, prefix="/api")
 app.include_router(index.router, prefix="/api")
+
+index_file = FileResponse(
+    "front/dist/index.html",
+    headers={"Cache-Control": "no-cache"}
+)
+
+
+@app.get("/")
+async def read_index():
+    return index_file
+
+app.mount("/", StaticFiles(directory="front/dist"), name="static")

@@ -50,6 +50,19 @@ def login_post(login_item: LoginItem):
     return jwt_encode
 
 
+@router.get('/token')
+def token():
+    jwt_encode = jwt.encode(
+        JwtItem(
+            create_at=datetime.now(),
+            expire_at=datetime.now() + timedelta(hours=1)
+        ).dict(),
+        settings.secret,
+        json_encoder=DateTimeEncoder
+    )
+    return jwt_encode
+
+
 def check_jwt(jwt_encode: str) -> bool:
     try:
         jwt_item = jwt.decode(

@@ -1,89 +1,91 @@
 <template>
-  <div class="flex">
-    <el-button @click="router.push('/')" type="primary" :icon="HomeFilled">首页</el-button>
-    <el-button @click="router.go(-1)" :icon="Back">返回</el-button>
-    <el-button type="primary" @click="drawer = true">
-      上传<el-icon class="el-icon--right">
-        <Upload />
-      </el-icon>
-    </el-button>
-    <el-button style="float:right" @click="logOut" type="primary" :icon="User">退出登录</el-button>
-    <el-switch v-model="isDark" style="float:right" inline-prompt :active-icon="Moon" :inactive-icon="Sunny" />
-  </div>
-  <el-table :data="tableData" stripe table-layout="auto" @row-click="open">
-    <el-table-column prop="name" label="名称" />
-    <el-table-column prop="time" label="时间" />
-    <el-table-column prop="size" label="大小" />
-    <el-table-column column-key="operate" label="操作">
-      <template #default="scope">
-        <el-row class="mb-4">
-          <el-dropdown v-if="scope.row.isfile">
-            <el-button type="primary" round plain>
-              <el-icon>
-                <Expand />
-              </el-icon>
-            </el-button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item>
-                  <el-link type="primary" :href="getDownload(scope.row.name)" target="_blank">
-                    <el-icon>
-                      <Download />
-                    </el-icon>
-                    下载
-                  </el-link>
-                </el-dropdown-item>
-                <div v-if="scope.row.name.match(/mp4|mkv|avi|mov|rmvb|webm|flv$/)">
-                  <el-dropdown-item>
-                    <el-link type="primary" :href="getStream('iina://weblink?url=', scope.row.name)" target="_blank">
-                      <el-icon>
-                        <VideoPlay />
-                      </el-icon>
-                      IINA
-                    </el-link>
-                  </el-dropdown-item>
-                  <el-dropdown-item>
-                    <el-link type="primary" :href="getStream('vlc://', scope.row.name)" target="_blank">
-                      <el-icon>
-                        <VideoPlay />
-                      </el-icon>
-                      VLC
-                    </el-link>
-                  </el-dropdown-item>
-                </div>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-          <el-popconfirm title="确定要删除吗?" @confirm="deleteItem(scope.row.name)">
-            <template #reference>
-              <el-button type="danger" :icon="Delete" plain round></el-button>
-            </template>
-          </el-popconfirm>
-        </el-row>
-      </template>
-    </el-table-column>
-  </el-table>
-  <el-drawer v-model="drawer">
-    <template #header>
-      <h4>上传文件</h4>
-    </template>
-    <template #default>
-      <el-input v-model="filePath" placeholder="文件路径" />
-      <el-upload drag action="/upload" :limit="1" :auto-upload="false" :on-change="onChangeFile">
-        <el-icon class="el-icon--upload">
-          <upload-filled />
+  <div class="filelist">
+    <div class="flex">
+      <el-button @click="router.push('/')" type="primary" :icon="HomeFilled">首页</el-button>
+      <el-button @click="router.go(-1)" :icon="Back">返回</el-button>
+      <el-button type="primary" @click="drawer = true">
+        上传<el-icon class="el-icon--right">
+          <Upload />
         </el-icon>
-        <div class="el-upload__text">
-          拖动到此处或 <em>点击上传</em>
+      </el-button>
+      <el-button style="float:right" @click="logOut" type="primary" :icon="User">退出登录</el-button>
+      <el-switch v-model="isDark" style="float:right" inline-prompt :active-icon="Moon" :inactive-icon="Sunny" />
+    </div>
+    <el-table :data="tableData" stripe table-layout="auto" @row-click="open">
+      <el-table-column prop="name" label="名称" />
+      <el-table-column prop="time" label="时间" />
+      <el-table-column prop="size" label="大小" />
+      <el-table-column column-key="operate" label="操作">
+        <template #default="scope">
+          <el-row class="mb-4">
+            <el-dropdown v-if="scope.row.isfile">
+              <el-button type="primary" round plain>
+                <el-icon>
+                  <Expand />
+                </el-icon>
+              </el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item>
+                    <el-link type="primary" :href="getDownload(scope.row.name)" target="_blank">
+                      <el-icon>
+                        <Download />
+                      </el-icon>
+                      下载
+                    </el-link>
+                  </el-dropdown-item>
+                  <div v-if="scope.row.name.match(/mp4|mkv|avi|mov|rmvb|webm|flv$/)">
+                    <el-dropdown-item>
+                      <el-link type="primary" :href="getStream('iina://weblink?url=', scope.row.name)" target="_blank">
+                        <el-icon>
+                          <VideoPlay />
+                        </el-icon>
+                        IINA
+                      </el-link>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
+                      <el-link type="primary" :href="getStream('vlc://', scope.row.name)" target="_blank">
+                        <el-icon>
+                          <VideoPlay />
+                        </el-icon>
+                        VLC
+                      </el-link>
+                    </el-dropdown-item>
+                  </div>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+            <el-popconfirm title="确定要删除吗?" @confirm="deleteItem(scope.row.name)">
+              <template #reference>
+                <el-button type="danger" :icon="Delete" plain round></el-button>
+              </template>
+            </el-popconfirm>
+          </el-row>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-drawer v-model="drawer">
+      <template #header>
+        <h4>上传文件</h4>
+      </template>
+      <template #default>
+        <el-input v-model="filePath" placeholder="文件路径" />
+        <el-upload drag action="/upload" :limit="1" :auto-upload="false" :on-change="onChangeFile">
+          <el-icon class="el-icon--upload">
+            <upload-filled />
+          </el-icon>
+          <div class="el-upload__text">
+            拖动到此处或 <em>点击上传</em>
+          </div>
+        </el-upload>
+      </template>
+      <template #footer>
+        <div style="flex: auto">
+          <el-button type="primary" @click="onUpload">上传</el-button>
         </div>
-      </el-upload>
-    </template>
-    <template #footer>
-      <div style="flex: auto">
-        <el-button type="primary" @click="onUpload">上传</el-button>
-      </div>
-    </template>
-  </el-drawer>
+      </template>
+    </el-drawer>
+  </div>
 </template>
 
 <script>
@@ -103,6 +105,7 @@ export default defineComponent({
     const drawer = ref(false)
     const filePath = ref("")
     const uploadFile = ref(null)
+    const token = ref("")
     const state = reactive({
       tableData: [],
     });
@@ -117,15 +120,21 @@ export default defineComponent({
       } catch (err) {
         ElMessage.error('请求出错了: ' + err.message + ", " + (err.response ? err.response.data : ""))
       }
+      try {
+        let res = await axios.get("/token");
+        token.value = res.data;
+      } catch (err) {
+        ElMessage.error('请求出错了: ' + err.message + ", " + (err.response ? err.response.data : ""))
+      }
       loadingInstance.close();
     };
     const getDownload = (name) => {
-      let url = axios.defaults.baseURL + "/download?path=";
-      return url + curPath.value + name;
+      let url = axios.defaults.baseURL + "/download/";
+      return url + curPath.value + name + "?token=" + token.value;
     }
     const getStream = (prefix, name) => {
-      let url = axios.defaults.baseURL + "/stream?path="
-      return prefix + url + curPath.value + name;
+      let url = axios.defaults.baseURL + "/stream/";
+      return prefix + url + curPath.value + name + "?token=" + token.value;
     }
     const open = (row, column) => {
       if (row.isfile || column.columnKey == "operate")
@@ -206,3 +215,11 @@ export default defineComponent({
   }
 })
 </script>
+
+<style>
+.filelist {
+  margin-top: 60px;
+  margin-left: 60px;
+  margin-right: 60px;
+}
+</style>

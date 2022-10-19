@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from fastapi.responses import JSONResponse, FileResponse, StreamingResponse
 from fastapi import APIRouter, UploadFile, status, Header
 
+from .index import check_jwt
 from .config import settings
 
 router = APIRouter()
@@ -81,8 +82,8 @@ def deleteItem(path: str):
     return True
 
 
-@router.get("/download", tags=["FileAPi"])
-def download_file(path: str):
+@router.get("/download/{path}", tags=["FileAPi"])
+def download_file(path: str, token: str):
     out_file_path = f"{settings.root_path}{os.sep}{path}"
     if not os.path.isfile(out_file_path):
         _logger.error(f"path {out_file_path} is not file")
@@ -95,8 +96,8 @@ def download_file(path: str):
     return FileResponse(path=out_file_path, filename=filename)
 
 
-@router.get("/stream", tags=["FileAPi"])
-def stream(path: str, range: str = Header(None)):
+@router.get("/stream/{path}", tags=["FileAPi"])
+def stream(path: str, token: str, range: str = Header(None)):
     out_file_path = f"{settings.root_path}{os.sep}{path}"
     file_size = os.stat(out_file_path).st_size
     headers = {
