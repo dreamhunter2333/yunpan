@@ -27,5 +27,9 @@ jobs:
 
       - name: Build the Docker image
         run: docker build . --file docker/Dockerfile --tag registry.cn-beijing.aliyuncs.com/dreamhunter/yunpan:${{ steps.get_version.outputs.VERSION }}
+      - name: Tag image
+        run: docker tag registry.cn-beijing.aliyuncs.com/dreamhunter/yunpan:${{ steps.get_version.outputs.VERSION }} registry.cn-beijing.aliyuncs.com/dreamhunter/yunpan:latest
       - name: Push the Docker image
         run: docker push registry.cn-beijing.aliyuncs.com/dreamhunter/yunpan:${{ steps.get_version.outputs.VERSION }}
+      - name: Push the Docker image
+        run: docker push registry.cn-beijing.aliyuncs.com/dreamhunter/yunpan:latest
