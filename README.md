@@ -17,6 +17,25 @@
 ![upload](readme_assets/upload.png)
 ![login](readme_assets/login.png)
 
+## 使用
+
+```yaml
+version: "2"
+
+services:
+  yunpan:
+    image: ghcr.io/dreamhunter2333/yunpan:latest
+    container_name: yunpan
+    environment:
+      - root_path=/data
+      - password=admin
+      - secret=admin
+    volumes:
+      - ../data:/data
+    ports:
+      - "8000:8000"
+```
+
 ## 开发
 
 ```bash
