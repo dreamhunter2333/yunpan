@@ -9,6 +9,9 @@
         </el-icon>
       </el-button>
       <el-button style="float:right" @click="logOut" type="primary" :icon="User">退出登录</el-button>
+      <el-button style="float:right" round :icon="Star">
+        <a href="https://github.com/dreamhunter2333/yunpan" target="_blank">Github</a>
+      </el-button>
       <el-switch v-model="isDark" style="float:right" inline-prompt :active-icon="Moon" :inactive-icon="Sunny" />
     </div>
     <el-table :data="tableData" stripe table-layout="auto" @row-click="open">
@@ -100,7 +103,7 @@
 import axios from "axios";
 import { reactive, onMounted, defineComponent, toRefs, ref, computed } from "vue";
 import { useRouter, useRoute } from 'vue-router'
-import { HomeFilled, Back, Upload, Delete, Sunny, Moon, User } from '@element-plus/icons-vue'
+import { HomeFilled, Back, Upload, Delete, Sunny, Moon, User, Star } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { ElLoading } from 'element-plus'
 import { useDark } from '@vueuse/core'
@@ -220,7 +223,7 @@ export default defineComponent({
       Upload,
       Delete,
       isDark,
-      Sunny, Moon, User
+      Sunny, Moon, User, Star
     }
   }
 })
