@@ -31,7 +31,7 @@ services:
       - password=admin
       - secret=admin
     volumes:
-      - ../data:/data
+      - ./data:/data
     ports:
       - "8000:8000"
 ```
