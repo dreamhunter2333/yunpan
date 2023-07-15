@@ -10,7 +10,6 @@ from pydantic import BaseModel
 from fastapi.responses import JSONResponse, FileResponse, StreamingResponse
 from fastapi import APIRouter, UploadFile, status, Header
 
-from .index import check_jwt
 from .config import settings
 
 router = APIRouter()
@@ -22,6 +21,15 @@ class FileItem(BaseModel):
     time: str
     size: str
     isfile: bool
+
+
+def format_size(size: int, precision: int = 2) -> str:
+    suffixes = ['B', 'KB', 'MB', 'GB', 'TB']
+    index = 0
+    while size >= 1024 and index < len(suffixes) - 1:
+        size /= 1024
+        index += 1
+    return f'{size:.{precision}f} {suffixes[index]}'
 
 
 @router.get("/list", response_model=List[FileItem], tags=["FileAPi"])
@@ -46,7 +54,7 @@ def list_file(path: str = ""):
                 "%Y-%m-%d %H:%M:%S",
                 time.gmtime(stat_result.st_mtime)
             ),
-            size=stat_result.st_size,
+            size=format_size(stat_result.st_size),
             isfile=stat.S_ISREG(stat_result.st_mode)
         ))
     return sorted(res, key=lambda item: (1 if item.isfile else 0, item.name))
@@ -103,7 +111,8 @@ def stream(path: str, token: str, range: str = Header(None)):
     headers = {
         "accept-ranges": "bytes",
         "content-encoding": "identity",
-        "content-length": str(file_size)
+        "content-length": str(file_size),
+        "content-type": "video/webm",
     }
     start = 0
     end = file_size - 1

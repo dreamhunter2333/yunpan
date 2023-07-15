@@ -1,12 +1,12 @@
 import os
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    root_path: str
-    password: str
-    secret: str
+    root_path: str = "data"
+    password: str = "password"
+    secret: str = "secret"
 
     class Config:
         env_file = os.environ.get("ENV_FILE", ".env")

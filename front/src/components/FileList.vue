@@ -36,6 +36,14 @@
                   </el-dropdown-item>
                   <div v-if="scope.row.name.match(/mp4|mkv|avi|mov|rmvb|webm|flv$/)">
                     <el-dropdown-item>
+                      <el-link type="primary" :href="getStream('', scope.row.name)" target="_blank">
+                        <el-icon>
+                          <VideoPlay />
+                        </el-icon>
+                        浏览器播放
+                      </el-link>
+                    </el-dropdown-item>
+                    <el-dropdown-item>
                       <el-link type="primary" :href="getStream('iina://weblink?url=', scope.row.name)" target="_blank">
                         <el-icon>
                           <VideoPlay />

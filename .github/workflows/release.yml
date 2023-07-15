@@ -1,35 +1,53 @@
-name: Docker Image Release
+name: Docker Image CI
 
 on:
   push:
     tags:
-      - "*.*.*"
+      - "*"
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build:
+  build-and-push-image:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Get version
         id: get_version
         run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - name: Install and Build
-        run: cd front && yarn && yarn build && rm -rf node_modules
-
-      - name: Docker Login
-        uses: docker/login-action@v1.8.0
+      - name: Install Node.js
+        uses: actions/setup-node@v3
         with:
-          registry: registry.cn-beijing.aliyuncs.com
-          username: ${{ secrets.ALIYUN_REGISTRY_USERNAME }}
-          password: ${{ secrets.ALIYUN_REGISTRY_PASSWORD }}
+          node-version: 16
 
-      - name: Build the Docker image
-        run: docker build . --file docker/Dockerfile --tag registry.cn-beijing.aliyuncs.com/dreamhunter/yunpan:${{ steps.get_version.outputs.VERSION }}
-      - name: Tag image
-        run: docker tag registry.cn-beijing.aliyuncs.com/dreamhunter/yunpan:${{ steps.get_version.outputs.VERSION }} registry.cn-beijing.aliyuncs.com/dreamhunter/yunpan:latest
-      - name: Push the Docker image
-        run: docker push registry.cn-beijing.aliyuncs.com/dreamhunter/yunpan:${{ steps.get_version.outputs.VERSION }}
-      - name: Push the Docker image
-        run: docker push registry.cn-beijing.aliyuncs.com/dreamhunter/yunpan:latest
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 7
+          run_install: false
+
+      - name: Build Frontend
+        run: cd front && pnpm install && pnpm build
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/dreamhunter2333/yunpan:${{ steps.get_version.outputs.VERSION }}
+            ghcr.io/dreamhunter2333/yunpan:latest
