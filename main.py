@@ -38,7 +38,7 @@ app.include_router(files_api.router, prefix="/api")
 app.include_router(index.router, prefix="/api")
 
 index_file = FileResponse(
-    "front/dist/index.html",
+    "dist/index.html",
     headers={"Cache-Control": "no-cache"}
 )
 
@@ -47,4 +47,8 @@ index_file = FileResponse(
 async def read_index():
     return index_file
 
-app.mount("/", StaticFiles(directory="front/dist"), name="static")
+app.mount("/", StaticFiles(directory="dist"), name="static")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

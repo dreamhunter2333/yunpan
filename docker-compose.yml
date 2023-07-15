@@ -2,7 +2,7 @@ version: "2"
 
 services:
   yunpan:
-    image: registry.cn-beijing.aliyuncs.com/dreamhunter/yunpan
+    image: ghcr.io/dreamhunter2333/yunpan:latest
     container_name: yunpan
     environment:
       - root_path=/data
