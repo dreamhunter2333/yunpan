@@ -6,7 +6,6 @@ on:
       - "*"
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-push-image:
@@ -49,5 +48,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/dreamhunter2333/yunpan:${{ steps.get_version.outputs.VERSION }}
-            ghcr.io/dreamhunter2333/yunpan:latest
+            ${{ env.REGISTRY }}/${{ github.actor }}/${{ github.repository }}:${{ steps.get_version.outputs.VERSION }}
+            ${{ env.REGISTRY }}/${{ github.actor }}/${{ github.repository }}:latest
